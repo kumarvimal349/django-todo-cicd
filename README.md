@@ -36,3 +36,13 @@ $ python manage.py runserver
 Once the server is hosted, head over to http://127.0.0.1:8000/todos for the App.
 
 Cheers and Happy Coding :)
+
+
+If you want to push image in dokerhub
+
+So, this means you have to tag your image before pushing:
+
+docker tag firstimage YOUR_DOCKERHUB_NAME/firstimage
+and then you should be able to push it.
+
+docker push YOUR_DOCKERHUB_NAME/firstimage
