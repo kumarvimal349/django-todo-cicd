@@ -1,48 +1,103 @@
-# django-todo
-A simple todo app built with django
+# django-todo on Kubernetes with Ingress
+This project demonstrates how to deploy a Reddit clone app on Kubernetes with Ingress and expose it to the world using Minikube as the cluster.
 
-![todo App](https://raw.githubusercontent.com/shreys7/django-todo/develop/staticfiles/todoApp.png)
-### Setup
-To get this repository, run the following command inside your git enabled terminal
-```bash
-$ git clone https://github.com/shreys7/django-todo.git
+## Prerequisites
+Before you begin, you should have the following tools installed on your local machine: 
+
+- Docker
+- Minikube cluster ( Running )
+- kubectl
+- Git
+
+You can install Prerequisites by doing this steps. [click here & complete all steps one by one]().
+
+
+## Installation
+Follow these steps to install and run the Reddit clone app on your local machine:
+
+1) Clone this repository to your local machine: `git clone https://github.com/LondheShubham153/reddit-clone-k8s-ingress.git`
+2) Navigate to the project directory: `cd reddit-clone-k8s-ingress`
+3) Build the Docker image for the Reddit clone app: `docker build -t reddit-clone-app .`
+4) Deploy the app to Kubernetes: `kubectl apply -f deployment.yaml`
+1) Deploy the Service for deployment to Kubernetes: `kubectl apply -f service.yaml`
+5) Enable Ingress by using Command: `minikube addons enable ingress`
+6) Expose the app as a Kubernetes service: `kubectl expose deployment reddit-deployment --type=NodePort --port=5000`
+7) Create an Ingress resource: `kubectl apply -f ingress.yaml`
+
+
+## Test Ingress DNS for the app:
+- Test Ingress by typing this command: `curl http://domain.com/test`
+
+## Cluster Monitoring using Prometheus & Grafana
+
+Key Components :
+
+- Prometheus server - Processes and stores metrics data
+- Alert Manager - Sends alerts to any systems/channels
+- Grafana - Visualize scraped data in UI
+
+Pre Requisites :
+- EKS Cluster is setup already
+- Install Helm
+- EC2 instance to access EKS cluster
+
+Installation Steps 
+```sh
+helm repo add stable https://charts.helm.sh/stable
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm search repo prometheus-community
+kubectl create namespace prometheus
+helm install stable prometheus-community/kube-prometheus-stack -n prometheus
+kubectl get pods -n prometheus
+kubectl get svc -n prometheus
 ```
-You will need django to be installed in you computer to run this app. Head over to https://www.djangoproject.com/download/ for the download guide
 
-Once you have downloaded django, go to the cloned repo directory and run the following command
-
-```bash
-$ python manage.py makemigrations
+Edit Prometheus Service (Edit type : LoadBalancer)
+```sh
+kubectl edit svc stable-kube-prometheus-sta-prometheus -n prometheus
 ```
 
-This will create all the migrations file (database migrations) required to run this App.
-
-Now, to apply this migrations run the following command
-```bash
-$ python manage.py migrate
+Edit Grafana Service (Edit type : LoadBalancer) 
+```sh
+kubectl edit svc stable-grafana -n prometheus
 ```
 
-One last step and then our todo App will be live. We need to create an admin user to run this App. On the terminal, type the following command and provide username, password and email for the admin user
-```bash
-$ python manage.py createsuperuser
+Verify if service is changed to LoadBalancer and also to get the Load Balancer URL.
+```sh
+kubectl get svc -n prometheus
 ```
 
-That was pretty simple, right? Now let's make the App live. We just need to start the server now and then we can start using our simple todo App. Start the server by following command
-
-```bash
-$ python manage.py runserver
+Access Grafana Dashboard
+```sh
+UserName: admin 
+Password: prom-operator
 ```
 
-Once the server is hosted, head over to http://127.0.0.1:8000/todos for the App.
 
-Cheers and Happy Coding :)
+For creating a dashboard to monitor the cluster:
+
+```sh
+Click '+' button on left panel and select ‘Import’.
+Enter 12740 dashboard id under Grafana.com Dashboard.
+Click ‘Load’.
+Select ‘Prometheus’ as the endpoint under prometheus data sources drop down.
+Click ‘Import’.
+```
 
 
-If you want to push image in dokerhub
+### Images For reference
 
-So, this means you have to tag your image before pushing:
 
-docker tag firstimage YOUR_DOCKERHUB_NAME/firstimage
-and then you should be able to push it.
 
-docker push YOUR_DOCKERHUB_NAME/firstimage
+<img width="1396" alt="image" src="https://user-images.githubusercontent.com/110477025/227587553-7163c709-85cf-4e23-a00b-823b08758859.png">
+
+
+
+<img width="1400" alt="image" src="https://user-images.githubusercontent.com/110477025/227587788-06ce33dd-3a09-4f36-9bbd-aff0925615ed.png">
+
+
+
+
+## Contributing
+If you'd like to contribute to this project, please open an issue or submit a pull request.
+
